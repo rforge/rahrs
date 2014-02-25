@@ -132,6 +132,7 @@ legend("topleft", c( expression(paste(psi,plain(TRIAD))) ,expression(paste(theta
 expression(paste(gamma,plain(TRIAD))),expression(paste(psi,plain(AHRS))) ,expression(paste(theta,plain(AHRS))),
 expression(paste(gamma,plain(AHRS)))),col=c('red','blue','green','orange','cyan','magenta'), lty=c(1, 1, 1, 1, 1, 1),bg='white')
 
+dev.new()
 yl<-c(-4*1e-4,4*1e-4)
 plot(dw.out[,1],col='blue',ylim=yl, type='l',main='EKF quaternion estimated gyroscope bias drift',xlab='Time 10 ms (100 Hz)',ylab='Estimated bias radians/sec')
 par(new=T)

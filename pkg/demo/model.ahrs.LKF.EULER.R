@@ -87,7 +87,7 @@ Sensors<-list(w=0,a=0,m=0)
 
 ## Main loop
 for (n in 1:Nsim)
-    { #if (n==4327) stop()
+    {
 #Sensors readings in Body frame
     Sensors$w <- (matrix(w.out[n,],ncol=1))
     Sensors$a <- (matrix(a.out[n,],ncol=1))
@@ -110,10 +110,7 @@ State <- tmp$State
 }
 R.out <- cbind(Psi.out, Theta.out, Gamma.out)
 
-#R.out$Psi.out <- Psi.out R.out$Theta.out <- Theta.out R.out$Gamma.out <- Gamma.out
 TRIAD. <- cbind(PsiMgn.out, ThetaAcc.out, GammaAcc.out)
-#str(TRIAD.)
-#TRIAD.$PsiMgn.out <- PsiMgn.out TRIAD.$ThetaAcc.out <- ThetaAcc.out TRIAD.$GammaAcc.out <- GammaAcc.out
 
 #pdf('LKF.EULER.pdf')
 ## Plot Results

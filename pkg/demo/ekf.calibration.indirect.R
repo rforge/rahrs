@@ -38,7 +38,7 @@ yl<- c(0,0.4)
 plot(l$tr_,col='blue',ylim=yl, type='l',main='Covariance matrix trace evolution',xlab='', ylab='')
 par(.pardefault)
 
-
+dev.new()
 #ellipsoid
 yl<- c(-1,1)
 plot(m,col='blue',ylim=yl, xlim=yl, type='l',main='Calibrated and Uncalibrated data',xlab='',ylab='')
