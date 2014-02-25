@@ -4,8 +4,6 @@ data(calibrationGyroLib)
 Nsim <- dim(calibrationGyroLib)[1]
 m <- matrix(unlist(calibrationGyroLib[,c('Mx','My','Mz')]),ncol=3,nrow=Nsim,byrow=FALSE)/3000
 
-
-
 l <- ekf.calibration.indirect(m)
 m_ <- l$m_
 tr_ <- l$tr_

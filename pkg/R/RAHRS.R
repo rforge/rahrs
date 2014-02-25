@@ -482,6 +482,7 @@ ahrs.LKF.EULER <- function(Sensors, State, Parameters)
 
 ## Get previous state
 q <- State$q
+if (any(is.na(q))) stop('Error! Q is NA.')
 dB <- State$dB
 dG <- State$dG
 dw <- State$dw
@@ -500,7 +501,10 @@ B <- matrix(c(dB[1], dG[1], dG[2], dG[3], dB[2], dG[4], dG[5], dG[6], dB[3]),nro
 OmegaBib <- (diag(3)-B) %*% Wb-dw
 
 ## Calculate quaternion
-q  <- Qrot(q, OmegaBib, dT)
+q  <- Qrot(q, matrix(OmegaBib,1), dT)
+
+#Q=q;w=matrix(OmegaBib,1)
+
 
 #Calculate DCM
 Cnb <- Q2DCM(Qnormalize(q))
@@ -587,13 +591,16 @@ dG <- dG+dG_hat
 dCbn <- matrix(c ( 0, df_hat[3], -df_hat[2], -df_hat[3], 0, df_hat[1], df_hat[2], -df_hat[1], 0 ), nrow=3,ncol=3,byrow=TRUE)
 Cbn <- Cbn %*% (diag(3)-dCbn)
 q <- DCM2Q(t(Cbn)) #rotMat2quatern(t(Cbn))
-q <- q[c(4,1,2,3)] # need to fix the order
-#write(format(q, scientific = TRUE,digits=8), file='LKF EULER qAFTERDCM2Q_R.txt',ncolumns =4,append=TRUE)
+
+#DCM=t(Cbn);tol = 10 * .Machine$double.eps; ichk=FALSE; ignoreAllChk=FALSE
+
+
+
+
 tmp <- DCM2EA(t(Cbn))
 Psi <- tmp[1]
 Theta <- tmp[2]
 Gamma <- tmp[3]
-#write(format(tmp, scientific = TRUE,digits=8), file='LKF EULER PsiThetaGamma_R.txt',ncolumns =3,append=TRUE)
 Attitude <- matrix(c (Psi, Theta, Gamma, PsiMgn, ThetaAcc, GammaAcc), nrow=6,ncol=1)
 
 ## Set Current State
@@ -669,7 +676,7 @@ x = K %*% z
 dw = dw + x[4:6]
 
 ## Correct quaternion
-qe  = matrix(c(x[1]/2, x[2]/2, x[3]/2),nrow=1, ncol=3)
+qe  = matrix(c(x[1]/2, x[2]/2, x[3]/2, 0),nrow=1, ncol=4) # ncol=3
 qqe = matrix(c(sqrt(1-(qe[1]^2+qe[2]^2+qe[3]^2)),qe[1], qe[2], qe[3]),nrow=1, ncol=4)
 q = q %Q*% qqe
 
@@ -716,8 +723,8 @@ Filter$P = (I-K %*% H) %*% Filter$P %*% t(I-K %*% H) + K %*% Filter$R %*% t(K)
 x = K %*% z
 
 ## Correct quaternion
-qe  = matrix(c(x[1]/2, x[2]/2, x[3]/2), ncol=3,nrow=1)
-qqe = matrix(c(sqrt(1-(qe[1]^2+qe[2]^2+qe[3]^2)), qe[1], qe[2], qe[3]), ncol=1,nrow=4)
+qe  = matrix(c(x[1]/2, x[2]/2, x[3]/2, 0), ncol=4,nrow=1) # ncol=3
+qqe = matrix(c(sqrt(1-(qe[1]^2+qe[2]^2+qe[3]^2)), qe[1], qe[2], qe[3]), ncol=4,nrow=1) #ncol=1,nrow=4 
 q   = q %Q*% qqe
 
 list( Filter=Filter, q=q)
@@ -806,7 +813,6 @@ Wc[1] <- Wc[1]+(1-alpha^2+beta)
 c <- sqrt(c)
 #sigma points around x
 X <- sigmas(x,P,c)
-
 
 #Predict
 #unscented transformation of process
@@ -915,6 +921,7 @@ dw <- matrix(x[5:7],ncol=1)
 #Correct angular rate
 W_hat <- wb-dw
 #calculate quaternion
+W_hat <- matrix(W_hat,ncol=3,byrow=FALSE)
 q <- Qrot(q, W_hat, dT)
 q <- Qnormalize(q)
 x[1:4] <- q
@@ -938,10 +945,10 @@ MadgwickAHRS<-function(MSamplePeriod, MBeta, q, Gyroscope, Accelerometer, Magnet
 if (any(is.na(c(MSamplePeriod, MBeta, q, Gyroscope, Accelerometer, Magnetometer)))) stop('Error! Input must be numeric.')
 if (!is.null(dim(MSamplePeriod))) stop('Error! SamplePeriod must be a scalar.')
 if (!is.null(dim(MBeta))) stop('Error! Beta must be a scalar.')
-if (!is.null(dim(q))) stop('Error! q must be a vector.')
-if (!is.null(dim(Gyroscope))) stop('Error! Gyroscope must be a vector.')
-if (!is.null(dim(Accelerometer))) stop('Error! Accelerometer must be a vector.')
-if (!is.null(dim(Magnetometer))) stop('Error! Magnetometer must be a vector.')
+# if (!is.null(dim(q))) stop('Error! q must be a vector.')
+# if (!is.null(dim(Gyroscope))) stop('Error! Gyroscope must be a vector.')
+# if (!is.null(dim(Accelerometer))) stop('Error! Accelerometer must be a vector.')
+# if (!is.null(dim(Magnetometer))) stop('Error! Magnetometer must be a vector.')
 if (length(MSamplePeriod) !=1) stop('Error! SamplePeriod must be a scalar.')
 if (length(MBeta) !=1) stop('Error! Beta must be a scalar.')
 if (length(q) !=4) stop('Error! q must be a vector with 4 elements.')
@@ -956,35 +963,37 @@ if (!is.numeric(Accelerometer))stop('Error! Accelerometer must be numeric.')
 if (!is.numeric(Magnetometer))stop('Error! Magnetometer must be numeric.')
 
 # Normalise accelerometer measurement
-if(Qnorm(Accelerometer) == 0) stop('Error! Accelerometer norm is zero.')
-Accelerometer <- Qnormalize(Accelerometer)# normalise magnitude
+if(norm(Accelerometer,'f') == 0) stop('Error! Accelerometer norm is zero.')
+Accelerometer <- (Accelerometer/norm(Accelerometer,'f'))# normalise magnitude
 # Normalise magnetometer measurement
-if(Qnorm(Magnetometer) == 0) stop('Error! Magnetometer norm is zero.')
-Magnetometer = Qnormalize(Magnetometer)# normalise magnitude
+if(norm(Magnetometer,'f') == 0) stop('Error! Magnetometer norm is zero.')
+Magnetometer = (Magnetometer/norm(Magnetometer,'f'))# normalise magnitude
 # Reference direction of Earth's magnetic field
 h <-  q %Q*% (c(0, Magnetometer) %Q*% Qconj(q))
-b <- c(0,Qnorm(c(h[2], h[3])), 0, h[4])
+b <- c(0,norm(cbind(h[2], h[3]),'f'), 0, h[4])
 # Gradient decent algorithm corrective step
-F<-c(2*(q[2]*q[4] - q[1]*q[3 ]) - Accelerometer[1],
+if (!is.matrix(q)) q <- matrix(q,ncol=4,byrow=FALSE)
+F2<-c(2*(q[2]*q[4] - q[1]*q[3 ]) - Accelerometer[1],
 2*(q[1]*q[2] + q[3]*q[4 ]) - Accelerometer[2],
 2*(0.5 - q[2]^2 - q[3]^2) - Accelerometer[3],
 2*b[2]*(0.5 - q[3]^2 - q[4]^2) + 2*b[4]*(q[2]*q[4] - q[1]*q[3 ]) - Magnetometer[1],
 2*b[2]*(q[2]*q[3] - q[1]*q[4 ]) + 2*b[4]*(q[1]*q[2] + q[3]*q[4 ]) - Magnetometer[2],
 2*b[2]*(q[1]*q[3] + q[2]*q[4 ]) + 2*b[4]*(0.5 - q[2]^2 - q[3]^2) - Magnetometer[3])
-J<-c(-2*q[3], 2*q[4], -2*q[1], 2*q[2],
+J2<-c(-2*q[3], 2*q[4], -2*q[1], 2*q[2],
 2*q[2], 2*q[1], 2*q[4], 2*q[3],
 0, -4*q[2], -4*q[3], 0,
 -2*b[4]*q[3], 2*b[4]*q[4], -4*b[2]*q[3]-2*b[4]*q[1], -4*b[2]*q[4]+2*b[4]*q[2],
 -2*b[2]*q[4]+2*b[4]*q[2], 2*b[2]*q[3]+2*b[4]*q[1], 2*b[2]*q[2]+2*b[4]*q[4], -2*b[2]*q[1]+2*b[4]*q[3],
 2*b[2]*q[3], 2*b[2]*q[4]-4*b[4]*q[2], 2*b[2]*q[1]-4*b[4]*q[3], 2*b[2]*q[2])
-J<-matrix(J,ncol=4,byrow=TRUE)
+F<-matrix(F2,ncol=1,byrow=TRUE)
+J<-matrix(J2,ncol=4,byrow=TRUE)
 Mstep <- t(J) %*% F
-Mstep <- Qnormalize(Mstep)
+Mstep <- Mstep/norm(Mstep,'f')
 # Compute rate of change of quaternion
-qDot <- 0.5 * (q %Q*% c(0, Gyroscope[1], Gyroscope[2], Gyroscope[3])) - MBeta * t(Mstep)
+qDot <- 0.5 * (q %Q*% cbind(0, Gyroscope[1], Gyroscope[2], Gyroscope[3])) - MBeta * matrix(Mstep,nrow=1)
 # Integrate to yield quaternion
 q <- q + qDot * MSamplePeriod
-MQuaternion <- Qnormalize(q)# normalise quaternion
+MQuaternion <- (q)/norm(q,'f')# normalise quaternion
 return(c(MQuaternion)) #turn it into a vector
 }
 
@@ -1025,7 +1034,7 @@ J<-matrix(J,ncol=4,byrow=TRUE)
 Mstep <- t(J) %*% F
 Mstep <- Qnormalize(Mstep)
 # Compute rate of change of quaternion
-qDot <- 0.5 * (q %Q*% c(0, Gyroscope[1], Gyroscope[2], Gyroscope[3])) - MBeta * t(Mstep)
+qDot <- 0.5 * (q %Q*% cbind(0, Gyroscope[1], Gyroscope[2], Gyroscope[3])) - MBeta * t(Mstep)
 # Integrate to yield quaternion
 q <- q + qDot * MSamplePeriod
 MQuaternion <- Qnormalize(q)# normalise quaternion
@@ -1067,7 +1076,7 @@ Magnetometer = Qnormalize(Magnetometer)# normalise magnitude
 
 # Reference direction of Earth's magnetic field
 h <-  q %Q*% (c(0, Magnetometer) %Q*% Qconj(q))
-b <- c(0,Qnorm(c(h[2], h[3])), 0, h[4])
+b <- cbind(0,Qnorm(c(h[2], h[3])), 0, h[4])
 # Estimated direction of gravity and magnetic field
 v <- c(2*(q[2]*q[4] - q[1]*q[3]), 
  2*(q[1]*q[2] + q[3]*q[4]),
@@ -1085,7 +1094,7 @@ else eInt <- c(0, 0, 0)
 Gyroscope <- Gyroscope + Kp * Merror + Ki * eInt
 
 # Compute rate of change of quaternion
-qDot <- 0.5 * (q %Q*% c(0, Gyroscope[1], Gyroscope[2], Gyroscope[3]))
+qDot <- 0.5 * (q %Q*% cbind(0, Gyroscope[1], Gyroscope[2], Gyroscope[3]))
  
 # Integrate to yield quaternion
 q <- q + qDot * MSamplePeriod
@@ -1135,7 +1144,7 @@ else eInt <- c(0, 0, 0)
 Gyroscope <- Gyroscope + Kp * Merror + Ki * eInt
 
 # Compute rate of change of quaternion
-qDot <- 0.5 * q %Q*% c(0, Gyroscope[1], Gyroscope[2], Gyroscope[3])
+qDot <- 0.5 * q %Q*% cbind(0, Gyroscope[1], Gyroscope[2], Gyroscope[3])
  
 # Integrate to yield quaternion
 q <- q + qDot * MSamplePeriod

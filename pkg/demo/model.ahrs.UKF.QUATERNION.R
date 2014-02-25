@@ -1,53 +1,48 @@
 library(RAHRS)
 
-# Data
-data(magnetometer3k)
-data(accelerometer3k)
-data(gyroscope3k)
-data(accl.coefs)
-data(magn.coefs)
+data(anglesGyroLib)
+
+accl.coefs <- matrix(c(-0.0771, -0.0817, -0.0769,  0.0066, -0.0032,  0.0001,  0.0090, -0.0023, -0.0035, -0.0281,  0.0430,  0.0306),ncol=1)
+magn.coefs <- matrix(c(-0.3801, -0.3108, -0.3351,  0.0342,  0.0109, -0.0066,  0.0070, -0.0696, -0.0492,  0.0552,  0.0565,  0.0190),ncol=1)
 gyro.coefs <- vector(mode='numeric',12)
 
 # Number of simulation steps
-Nsim <- dim(magnetometer3k)[1]
-m <- matrix(unlist(magnetometer3k),ncol=3,nrow=Nsim,byrow=TRUE)
-a <- matrix(unlist(accelerometer3k),ncol=3,nrow=Nsim,byrow=TRUE)
-w <- matrix(unlist(gyroscope3k),ncol=3,nrow=Nsim,byrow=TRUE)
+Nsim <- dim(anglesGyroLib)[1]
+m <- matrix(unlist(anglesGyroLib[,c('Mx','My','Mz')]),ncol=3,nrow=Nsim,byrow=FALSE)/3000
+a <- matrix(unlist(anglesGyroLib[,c('Ax','Ay','Az')]),ncol=3,nrow=Nsim,byrow=FALSE)/3000
+w <- matrix(unlist(anglesGyroLib[,c('Wx','Wy','Wz')]),ncol=3,nrow=Nsim,byrow=FALSE)/3000
 
-#Number of simulation steps
-Nsim <- dim(a)[1]
-
-#Define Output data Arrays
-R_ <- matrix(0,ncol=3,nrow=Nsim)
-dw_ <- matrix(0,ncol=3,nrow=Nsim)
-w_ <- matrix(0,ncol=3,nrow=Nsim)
-a_ <- matrix(0,ncol=3,nrow=Nsim)
-m_ <- matrix(0,ncol=3,nrow=Nsim)
-TRIAD_ <- matrix(0,ncol=3,nrow=Nsim)
+# Define Output data Arrays
+R.out <- matrix(0,ncol=3,nrow=Nsim)
+dw.out <- matrix(0,ncol=3,nrow=Nsim)
+w.out <- matrix(0,ncol=3,nrow=Nsim)
+a.out <- matrix(0,ncol=3,nrow=Nsim)
+m.out <- matrix(0,ncol=3,nrow=Nsim)
+TRIAD.out <- matrix(0,ncol=3,nrow=Nsim)
 
 ## Calibrate magnetometers
-B = matrix(c(magn_coefs[1], magn_coefs[4], magn_coefs[5],
-    magn_coefs[6], magn_coefs[2], magn_coefs[7],
-    magn_coefs[8], magn_coefs[9], magn_coefs[3]),nrow=3,ncol=3,byrow=TRUE)
-B0 = matrix(c(magn_coefs[10],magn_coefs[11],magn_coefs[12]),nrow=3,ncol=1)
+B <- matrix(as.numeric(c(magn.coefs[1], magn.coefs[4], magn.coefs[5],
+                         magn.coefs[6], magn.coefs[2], magn.coefs[7],
+                         magn.coefs[8], magn.coefs[9], magn.coefs[3])),nrow=3,ncol=3,byrow=TRUE)
+B0 <- matrix(as.numeric(c(magn.coefs[10],magn.coefs[11],magn.coefs[12])),nrow=3,ncol=1)
 
-for (n in 1:Nsim) m_[n,] <- t((diag(3)-B) %*% (t(m[n,]) - B0))
+for (n in 1:Nsim) m.out[n,] <- t((diag(3) - B) %*% (matrix(m[n,],3,1) - B0))
 
 ## Calibrate accelerometers
-B = matrix(c(accl_coefs[1], accl_coefs[4], accl_coefs[5],
-    accl_coefs[6], accl_coefs[2], accl_coefs[7],
-    accl_coefs[8], accl_coefs[9], accl_coefs[3]),nrow=3,ncol=3,byrow=TRUE)
-B0 = matrix(c(accl_coefs[10],accl_coefs[11],accl_coefs[12]),nrow=3,ncol=1)
+B <- matrix(as.numeric(c(accl.coefs[1], accl.coefs[4], accl.coefs[5],
+                         accl.coefs[6], accl.coefs[2], accl.coefs[7],
+                         accl.coefs[8], accl.coefs[9], accl.coefs[3])),nrow=3,ncol=3,byrow=TRUE)
+B0 <- matrix(as.numeric(c(accl.coefs[10],accl.coefs[11],accl.coefs[12])),nrow=3,ncol=1)
 
-for (n in 1:Nsim) a_[n,] <- t((diag(3)-B) %*% (t(a[n,]) - B0))
+for (n in 1:Nsim) a.out[n,] <- t((diag(3)-B) %*% (matrix(a[n,],3,1) - B0))
 
 ## Calibrate gyroscopes
-B = matrix(c(gyro_coefs[1], gyro_coefs[4], gyro_coefs[5],
-    gyro_coefs[6], gyro_coefs[2], gyro_coefs[7],
-    gyro_coefs[8], gyro_coefs[9], gyro_coefs[3]),nrow=3,ncol=3,byrow=TRUE)
-B0 = matrix(c(gyro_coefs[10],gyro_coefs[11],gyro_coefs[12]),nrow=3,ncol=1)
+B <- matrix(as.numeric(c(gyro.coefs[1], gyro.coefs[4], gyro.coefs[5],
+                         gyro.coefs[6], gyro.coefs[2], gyro.coefs[7],
+                         gyro.coefs[8], gyro.coefs[9], gyro.coefs[3])),nrow=3,ncol=3,byrow=TRUE)
+B0 <- matrix(as.numeric(c(gyro.coefs[10],gyro.coefs[11],gyro.coefs[12])),nrow=3,ncol=1)
 
-for (n in 1:Nsim) w_[n,] <- t((diag(3)-B) %*% (t(w[n,]) - B0))
+for (n in 1:Nsim) w.out[n,] <- t((diag(3)-B) %*% (matrix(w[n,],3,1) - B0))
 
 ## AHRS Parameters
 #Magnetic Field Vector In Navigation Frame
@@ -59,7 +54,7 @@ Parameters$an = matrix(c(0, 0, -1),ncol=1)
 Parameters$dT  = c(1/100)
 
 #Initial attitude quaternion value
-q = EA2Q( 0.0,0.0,0.0,'zyx' ) 
+q = EA2Q( c(0.0,0.0,0.0),'zyx' ) 
 #q = single(q)
 #Initial State Vector
 Filter<-list(x=0,P=0,R=0,Q=0)
@@ -74,19 +69,19 @@ Sensors<-list(w=0,a=0,m=0)
 ## Main loop
 for (n in 1:Nsim)
     {
-    Sensors$w = (matrix(w_[n,],ncol=1))
-    Sensors$a = (matrix(a_[n,],ncol=1))
-    Sensors$m = (matrix(m_[n,],ncol=1))
+    Sensors$w = (matrix(w.out[n,],ncol=1))
+    Sensors$a = (matrix(a.out[n,],ncol=1))
+    Sensors$m = (matrix(m.out[n,],ncol=1))
 
     ## AHRS Part
-    Filter = ahrs_UKF_QUATERNION(Filter, Sensors, Parameters)
-    #[R_(i,1) R_(i,2) R_(i,3)] = ...
-  R_[n,] <- Q2EA(Filter$x[1:4])
-    dw_[n,] =  c(Filter$x[5], Filter$x[6], Filter$x[7])
+    Filter = ahrs.UKF.QUATERNION(Filter, Sensors, Parameters)
+    #[R.out(i,1) R.out(i,2) R.out(i,3)] = ...
+  R.out[n,] <- Q2EA(Filter$x[1:4])
+    dw.out[n,] =  c(Filter$x[5], Filter$x[6], Filter$x[7])
 
     ## TRIAD Part
-    W1 = matrix(a_[n,],nrow=1) / norm(matrix(a_[n,],nrow=1),'f') 
-    W2 = matrix(m_[n,],nrow=1)/norm(matrix(m_[n,],nrow=1),'f')
+    W1 = matrix(a.out[n,],nrow=1) / norm(matrix(a.out[n,],nrow=1),'f') 
+    W2 = matrix(m.out[n,],nrow=1)/norm(matrix(m.out[n,],nrow=1),'f')
     
     V1 = (matrix(Parameters$an,nrow=1))/norm(matrix(Parameters$an,nrow=1),'f')#t
     V2 = (matrix(Parameters$mn,nrow=1))/norm(matrix(Parameters$mn,nrow=1),'f')#t
@@ -105,28 +100,28 @@ for (n in 1:Nsim)
     A = Mou %*% t(Mr)
 
     # Calculate angles
-   # [TRIAD_(i,1) TRIAD_(i,2) TRIAD_(i,3)] = DCM2EA_eml(A)
-    TRIAD_[n,] <- DCM2EA(A)#rotMat2euler(A)
+   # [TRIAD.out(i,1) TRIAD.out(i,2) TRIAD.out(i,3)] = DCM2EA.outeml(A)
+    TRIAD.out[n,] <- DCM2EA(A)#rotMat2euler(A)
    
 }
 
-#pdf('EKF_QUATERNION.pdf')
+#pdf('EKF.QUATERNION.pdf')
 ## Plot Results
 #psi - Angle around Z axis
 #theta - Angle around Y axis
 #gamma - Angle around X axis
 
-plot(TRIAD_[,1],col='red',ylim=c(-4,4), type='l',main='UKF quaternion TRIAD / AHRS',xlab='Time 10 msec (100 Hz)', ylab='Euler angles')
+plot(TRIAD.out[,1],col='red',ylim=c(-4,4), type='l',main='UKF quaternion TRIAD / AHRS',xlab='Time 10 msec (100 Hz)', ylab='Euler angles')
 par(new=T)
-plot(TRIAD_[,2],col='blue',ylim=c(-4,4), type='l',main='',xlab='', ylab='')
+plot(TRIAD.out[,2],col='blue',ylim=c(-4,4), type='l',main='',xlab='', ylab='')
 par(new=T)
-plot(TRIAD_[,3],col='green',ylim=c(-4,4), type='l',main='',xlab='', ylab='')
+plot(TRIAD.out[,3],col='green',ylim=c(-4,4), type='l',main='',xlab='', ylab='')
 par(new=T)
-plot(R_[,1],col='orange',ylim=c(-4,4), type='l',main='',xlab='', ylab='')
+plot(R.out[,1],col='orange',ylim=c(-4,4), type='l',main='',xlab='', ylab='')
 par(new=T)
-plot(R_[,2],col='cyan',ylim=c(-4,4), type='l',main='',xlab='', ylab='')
+plot(R.out[,2],col='cyan',ylim=c(-4,4), type='l',main='',xlab='', ylab='')
 par(new=T)
-plot(R_[,3],col='magenta',ylim=c(-4,4), type='l',main='',xlab='', ylab='')
+plot(R.out[,3],col='magenta',ylim=c(-4,4), type='l',main='',xlab='', ylab='')
 abline(h=(seq(-4,4,1)), col="lightgray", lty="dotted")
 abline(v=(seq(0,16000,1000)), col="lightgray", lty="dotted")
 legend("topleft", c( expression(paste(psi,plain(TRIAD))) ,expression(paste(theta,plain(TRIAD))),
@@ -136,11 +131,11 @@ expression(paste(gamma,plain(AHRS)))),col=c('red','blue','green','orange','cyan'
 
 
 yl<-c(-6*1e-4,4*1e-4)
-plot(dw_[,1],col='blue',ylim=yl, type='l',main='UKF quaternion estimated gyroscope bias drift',xlab='Time 10 ms (100 Hz)',ylab='Estimated bias radians/sec')
+plot(dw.out[,1],col='blue',ylim=yl, type='l',main='UKF quaternion estimated gyroscope bias drift',xlab='Time 10 ms (100 Hz)',ylab='Estimated bias radians/sec')
 par(new=T)
-plot(dw_[,2],col='green',ylim=yl, type='l',main='',xlab='', ylab='')
+plot(dw.out[,2],col='green',ylim=yl, type='l',main='',xlab='', ylab='')
 par(new=T)
-plot(dw_[,3],col='red',ylim=yl, type='l',main='',xlab='', ylab='')
+plot(dw.out[,3],col='red',ylim=yl, type='l',main='',xlab='', ylab='')
 abline(h=(seq(-4*1e-4,4*1e-4,1*1e-4)), col="lightgray", lty="dotted")
 abline(v=(seq(0,16000,1000)), col="lightgray", lty="dotted")
 legend("topleft", c( expression(paste(omega,plain(X0))) ,expression(paste(omega,plain(Y0))),

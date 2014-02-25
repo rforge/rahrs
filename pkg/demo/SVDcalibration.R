@@ -22,7 +22,7 @@ cat('Pzx ',coefs[8],'	Pzy ',coefs[9],'\n')
 #Pxy = 0.024494 Pxz = -0.056409
 #Pyx = 0.000000 Pyz = -0.044778
 #Pzx = 0.000000 Pzy = 0.000000
-str(l)
+par(mar = rep(2, 4))
 #Plot results
 par(mfrow = c(3,1))
 yl<- c(-1,1)

@@ -2,8 +2,6 @@ library(RAHRS)
 
 # Data
 data(anglesGyroLib)
-#data(accl.coefs)
-#data(magn.coefs)
 
 accl.coefs <- matrix(c(-0.0771, -0.0817, -0.0769,  0.0066, -0.0032,  0.0001,  0.0090, -0.0023, -0.0035, -0.0281,  0.0430,  0.0306),ncol=1)
 magn.coefs <- matrix(c(-0.3801, -0.3108, -0.3351,  0.0342,  0.0109, -0.0066,  0.0070, -0.0696, -0.0492,  0.0552,  0.0565,  0.0190),ncol=1)
@@ -55,16 +53,6 @@ Parameters$mn <- matrix(c(0.315777529635464, 0.057133095826051, -0.9471115885357
 Parameters$an <- matrix(c(0, 0, -1),3,1)
 #Sampling Rate 1/Hz
 Parameters$dT  <- c(1/100)
-
-
-
-EA2Q( c(2.0,3.0,1.0),'zyx') 
-EA2Q( c(3.0,2.0,1.0),'zyx') 
-EA2Q( c(1.0,3.0,2.0),'zyx') 
-EA2Q( c(2.0,1.0,3.0),'zyx') 
-EA2Q( c(3.0,1.0,2.0),'zyx') 
-EA2Q( c(1.0,2.0,3.0),'zyx')
-
 
 #Initial attitude quaternion value
 q <- EA2Q( c(0.0,0.0,0.0),'zyx') 
@@ -125,6 +113,7 @@ for (n in 1:Nsim)
 #psi - Angle around Z axis
 #theta - Angle around Y axis
 #gamma - Angle around X axis
+par(mar = rep(2, 4))
 
 plot(TRIAD.out[,1],col='red',ylim=c(-4,4), type='l',main='EKF quaternion TRIAD / AHRS',xlab='Time 10 msec (100 Hz)', ylab='Euler angles')
 par(new=T)
@@ -152,6 +141,6 @@ plot(dw.out[,3],col='red',ylim=yl, type='l',main='',xlab='', ylab='')
 abline(h=(seq(-4*1e-4,4*1e-4,1*1e-4)), col="lightgray", lty="dotted")
 abline(v=(seq(0,16000,1000)), col="lightgray", lty="dotted")
 legend("topleft", c( expression(paste(omega,plain(X0))) ,expression(paste(omega,plain(Y0))),
-expression(paste(omega,plain(Z0)))),col=c('red','blue','green','orange','cyan','magenta'), lty=c(1, 1, 1))
+expression(paste(omega,plain(Z0)))),col=c('blue','green','red'), lty=c(1, 1, 1))
 
 #dev.off()
