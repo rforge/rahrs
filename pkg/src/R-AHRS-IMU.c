@@ -40,7 +40,7 @@ float invSqrt(float x) {
 	i = 0x5f3759df - (i>>1);
 	y = *(float*)&i;
 	y = y * (1.5 - (halfx * y * y));
-	return y;
+	return (float)y;
 }
 
 double invSqrtDbl(double x) {
@@ -50,7 +50,7 @@ double invSqrtDbl(double x) {
 	i = 0x5fe6eb50c7aa19f9 - (i>>1);
 	y = *(double*)&i;
 	y = y * (1.5 - (halfx * y * y));
-	return y;
+	return (double)y;
 }
 
 
@@ -64,12 +64,12 @@ float *gxi, float *gyi, float *gzi,
 float *axi, float *ayi, float *azi, 
 float *sampleFreqi, float *twoKpi,float *twoKii,
 float *integralFBxi, float *integralFByi, float *integralFBzi, 
-float *q0i,float *q1i,float *q2i,float *q3i)
+float *q0i,float *q1i,float *q2i,float *q3i)//
  {
 
 float gx=*gxi, gy=*gyi, gz=*gzi, ax=*axi, ay=*ayi, az=*azi, sampleFreq=*sampleFreqi, 
 integralFBx=*integralFBxi,integralFBy=*integralFByi,integralFBz=*integralFBzi,
-twoKp=*twoKpi, twoKi=*twoKii, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
+twoKp=*twoKpi, twoKi=*twoKii, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;//
 
 	float recipNorm;
 	float halfvx, halfvy, halfvz;
@@ -140,25 +140,14 @@ twoKp=*twoKpi, twoKi=*twoKii, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
 *q3i=q3;
 }
 
-
-
-
-
-
-
-
-
-
-
-
 void MadgwickAHRSupdateIMU(
 float *gxi, float *gyi, float *gzi, 
 float *axi, float *ayi, float *azi, 
-float *sampleFreqi,float *betai, float *twoKpDefi,float *twoKiDefi,
-float *q0i,float *q1i,float *q2i,float *q3i) {
+float *sampleFreqi,float *betai, 
+float *q0i,float *q1i,float *q2i,float *q3i) {//float *twoKpDefi,float *twoKiDefi,
 
 float gx=*gxi, gy=*gyi, gz=*gzi, ax=*axi, ay=*ayi, az=*azi, sampleFreq=*sampleFreqi, 
-beta=*betai, twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
+beta=*betai, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;// twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi,
 
 	float recipNorm;
 	float s0, s1, s2, s3;
@@ -238,11 +227,11 @@ void MadgwickAHRSupdate(
 float *gxi, float *gyi, float *gzi, 
 float *axi, float *ayi, float *azi, 
 float *mxi, float *myi, float *mzi, 
-float *sampleFreqi,float *betai, float *twoKpDefi,float *twoKiDefi,
-float *q0i,float *q1i,float *q2i,float *q3i) {
+float *sampleFreqi,float *betai, 
+float *q0i,float *q1i,float *q2i,float *q3i) {//float *twoKpDefi,float *twoKiDefi,
 
 float gx=*gxi, gy=*gyi, gz=*gzi, ax=*axi, ay=*ayi, az=*azi, mx=*mxi, my=*myi, mz=*mzi, sampleFreq=*sampleFreqi, 
-beta=*betai, twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
+beta=*betai, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;//twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, 
 
 	float recipNorm;
 	float s0, s1, s2, s3;
@@ -253,7 +242,7 @@ beta=*betai, twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, q0=*q0i, q1=*q1i, q2=*q2i
 	// Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
 	if((mx == 0.0) && (my == 0.0) && (mz == 0.0)) {
 		//MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az);
-MadgwickAHRSupdateIMU(gxi, gyi, gzi, axi, ayi, azi,sampleFreqi,betai, twoKpDefi,twoKiDefi,q0i,q1i,q2i,q3i);
+MadgwickAHRSupdateIMU(gxi, gyi, gzi, axi, ayi, azi,sampleFreqi,betai, q0i,q1i,q2i,q3i);//twoKpDefi,twoKiDefi,
 		return;
 	}
 
@@ -348,11 +337,11 @@ float *axi, float *ayi, float *azi,
 float *mxi, float *myi, float *mzi, 
 float *sampleFreqi, float *twoKpi,float *twoKii,
 float *integralFBxi, float *integralFByi, float *integralFBzi, 
-float *q0i,float *q1i,float *q2i,float *q3i) {
+float *q0i,float *q1i,float *q2i,float *q3i) {//
 
 float gx=*gxi, gy=*gyi, gz=*gzi, ax=*axi, ay=*ayi, az=*azi,mx=*mxi, my=*myi, mz=*mzi, sampleFreq=*sampleFreqi, 
 integralFBx=*integralFBxi,integralFBy=*integralFByi,integralFBz=*integralFBzi,
-twoKp=*twoKpi, twoKi=*twoKii, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
+twoKp=*twoKpi, twoKi=*twoKii, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;//
 
 	float recipNorm;
     float q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;  
@@ -365,7 +354,7 @@ twoKp=*twoKpi, twoKi=*twoKii, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
 	if((mx == 0.0) && (my == 0.0) && (mz == 0.0)) {
 		//MahonyAHRSupdateIMU(gx, gy, gz, ax, ay, az);
 MahonyAHRSupdateIMU(gxi, gyi, gzi, axi, ayi, azi, sampleFreqi, twoKpi,twoKii,integralFBxi, integralFByi, integralFBzi, 
-q0i,q1i,q2i,q3i);
+q0i,q1i,q2i,q3i);//
 
 		return;
 	}
@@ -470,12 +459,12 @@ float *gxi, float *gyi, float *gzi,
 float *axi, float *ayi, float *azi, 
 float *sampleFreqi, float *twoKpi,float *twoKii,
 float *integralFBxi, float *integralFByi, float *integralFBzi, 
-float *q0i,float *q1i,float *q2i,float *q3i)
+float *q0i,float *q1i,float *q2i,float *q3i)//
  {
 
 float gx=*gxi, gy=*gyi, gz=*gzi, ax=*axi, ay=*ayi, az=*azi, sampleFreq=*sampleFreqi, 
 integralFBx=*integralFBxi,integralFBy=*integralFByi,integralFBz=*integralFBzi,
-twoKp=*twoKpi, twoKi=*twoKii, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
+twoKp=*twoKpi, twoKi=*twoKii, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;//
 
 	float recipNorm;
 	float halfvx, halfvy, halfvz;
@@ -560,11 +549,11 @@ twoKp=*twoKpi, twoKi=*twoKii, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
 void MadgwickAHRSupdateIMU2(
 float *gxi, float *gyi, float *gzi, 
 float *axi, float *ayi, float *azi, 
-float *sampleFreqi,float *betai, float *twoKpDefi,float *twoKiDefi,
-float *q0i,float *q1i,float *q2i,float *q3i) {
+float *sampleFreqi,float *betai, 
+float *q0i,float *q1i,float *q2i,float *q3i) {//float *twoKpDefi,float *twoKiDefi,
 
 float gx=*gxi, gy=*gyi, gz=*gzi, ax=*axi, ay=*ayi, az=*azi, sampleFreq=*sampleFreqi, 
-beta=*betai, twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
+beta=*betai, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;//twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, 
 
 	float recipNorm;
 	float s0, s1, s2, s3;
@@ -644,11 +633,11 @@ void MadgwickAHRSupdate2(
 float *gxi, float *gyi, float *gzi, 
 float *axi, float *ayi, float *azi, 
 float *mxi, float *myi, float *mzi, 
-float *sampleFreqi,float *betai, float *twoKpDefi,float *twoKiDefi,
-float *q0i,float *q1i,float *q2i,float *q3i) {
+float *sampleFreqi,float *betai, 
+float *q0i,float *q1i,float *q2i,float *q3i) {//float *twoKpDefi,float *twoKiDefi,
 
 float gx=*gxi, gy=*gyi, gz=*gzi, ax=*axi, ay=*ayi, az=*azi, mx=*mxi, my=*myi, mz=*mzi, sampleFreq=*sampleFreqi, 
-beta=*betai, twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
+beta=*betai, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;//twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, 
 
 	float recipNorm;
 	float s0, s1, s2, s3;
@@ -659,7 +648,7 @@ beta=*betai, twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, q0=*q0i, q1=*q1i, q2=*q2i
 	// Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
 	if((mx == 0.0) && (my == 0.0) && (mz == 0.0)) {
 		//MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az);
-MadgwickAHRSupdateIMU(gxi, gyi, gzi, axi, ayi, azi,sampleFreqi,betai, twoKpDefi,twoKiDefi,q0i,q1i,q2i,q3i);
+MadgwickAHRSupdateIMU(gxi, gyi, gzi, axi, ayi, azi,sampleFreqi,betai, q0i,q1i,q2i,q3i);//twoKpDefi,twoKiDefi,
 		return;
 	}
 
@@ -957,11 +946,11 @@ twoKp=*twoKpi, twoKi=*twoKii, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
 void MadgwickAHRSupdateIMUDbl(
 double *gxi, double *gyi, double *gzi, 
 double *axi, double *ayi, double *azi, 
-double *sampleFreqi,double *betai, double *twoKpDefi,double *twoKiDefi,
-double *q0i,double *q1i,double *q2i,double *q3i) {
+double *sampleFreqi,double *betai, 
+double *q0i,double *q1i,double *q2i,double *q3i) {//double *twoKpDefi,double *twoKiDefi,
 
 double gx=*gxi, gy=*gyi, gz=*gzi, ax=*axi, ay=*ayi, az=*azi, sampleFreq=*sampleFreqi, 
-beta=*betai, twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
+beta=*betai,  q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;//twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi,
 
 	double recipNorm;
 	double s0, s1, s2, s3;
@@ -1041,11 +1030,11 @@ void MadgwickAHRSupdateDbl(
 double *gxi, double *gyi, double *gzi, 
 double *axi, double *ayi, double *azi, 
 double *mxi, double *myi, double *mzi, 
-double *sampleFreqi,double *betai, double *twoKpDefi,double *twoKiDefi,
-double *q0i,double *q1i,double *q2i,double *q3i) {
+double *sampleFreqi,double *betai, 
+double *q0i,double *q1i,double *q2i,double *q3i) {//double *twoKpDefi,double *twoKiDefi,
 
 double gx=*gxi, gy=*gyi, gz=*gzi, ax=*axi, ay=*ayi, az=*azi, mx=*mxi, my=*myi, mz=*mzi, sampleFreq=*sampleFreqi, 
-beta=*betai, twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;
+beta=*betai,  q0=*q0i, q1=*q1i, q2=*q2i, q3=*q3i;//twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi,
 
 	double recipNorm;
 	double s0, s1, s2, s3;
@@ -1056,7 +1045,7 @@ beta=*betai, twoKpDef=*twoKpDefi, twoKiDef=*twoKiDefi, q0=*q0i, q1=*q1i, q2=*q2i
 	// Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
 	if((mx == 0.0) && (my == 0.0) && (mz == 0.0)) {
 		//MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az);
-MadgwickAHRSupdateIMUDbl(gxi, gyi, gzi, axi, ayi, azi,sampleFreqi,betai, twoKpDefi,twoKiDefi,q0i,q1i,q2i,q3i);
+MadgwickAHRSupdateIMUDbl(gxi, gyi, gzi, axi, ayi, azi,sampleFreqi,betai, q0i,q1i,q2i,q3i);//twoKpDefi,twoKiDefi,
 		return;
 	}
 
