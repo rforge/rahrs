@@ -1,6 +1,3 @@
-#library(pracma)
-#library(RSpincalc)
-#library(Matrix)????
 
 #	*		*		*	EKF QUATERNION *	*		*
 
