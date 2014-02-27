@@ -36,21 +36,27 @@
 float invSqrt(float x) {
 	float halfx = 0.5 * x;
 	float y = x;
-	long i = *(long*)&y;
+	//long i = *(long*)&y;
+long i = 0;
+memcpy(&i, &y, sizeof(y));
 	i = 0x5f3759df - (i>>1);
-	y = *(float*)&i;
+	//y = *(float*)&i;
+memcpy(&y, &i, sizeof(i));
 	y = y * (1.5 - (halfx * y * y));
-	return (float)y;
+	return y;
 }
 
 double invSqrtDbl(double x) {
 	double halfx = 0.5 * x;
 	double y = x;
-	long long i = *(long long*)&y;
+	//long long i = *(long long*)&y;
+long long i = 0;
+memcpy(&i, &y, sizeof(y));
 	i = 0x5fe6eb50c7aa19f9 - (i>>1);
-	y = *(double*)&i;
+	//y = *(double*)&i;
+memcpy(&y, &i, sizeof(i));
 	y = y * (1.5 - (halfx * y * y));
-	return (double)y;
+	return y;
 }
 
 
