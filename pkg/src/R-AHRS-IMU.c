@@ -40,7 +40,7 @@ float invSqrt(float x) {
 	i = 0x5f3759df - (i>>1);
 	y = *(float*)&i;
 	y = y * (1.5 - (halfx * y * y));
-	return (float*)&y;
+	return (float)y;
 }
 
 double invSqrtDbl(double x) {
@@ -50,7 +50,7 @@ double invSqrtDbl(double x) {
 	i = 0x5fe6eb50c7aa19f9 - (i>>1);
 	y = *(double*)&i;
 	y = y * (1.5 - (halfx * y * y));
-	return (double*)&y;
+	return (double)y;
 }
 
 
