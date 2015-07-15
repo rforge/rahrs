@@ -3,7 +3,7 @@ Type: Package
 Title: Data fusion filters for Attitude Heading Reference System (AHRS) with several variants of the Kalman filter and the Mahoney and Madgwick filters.
 Version: 1.0.2
 Encoding: UTF-8
-Authors@R: c(person(given = "Jose'", family = "Gama", role = c("aut","cre","trl"),email = "rxprtgama@gmail.com"),
+Authors@R: c(person(given = "Jose", family = "Gama", role = c("aut","cre","trl"),email = "rxprtgama@gmail.com"),
     person(given = "Vlad", family = "Maximov", role = "aut"),
     person(given = "Sebastian", family = "O.H. Madgwick", role = "aut"),
     person(given = "Alain", family = "Barraud", role = "ctb"))   
