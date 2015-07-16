@@ -1,6 +1,6 @@
 Package: RAHRS
 Type: Package
-Title: Data fusion filters for Attitude Heading Reference System (AHRS) with several variants of the Kalman filter and the Mahoney and Madgwick filters.
+Title: Data Fusion Filters for Attitude Heading Reference System (AHRS) with Several Variants of the Kalman Filter and the Mahoney and Madgwick Filters
 Version: 1.0.2
 Encoding: UTF-8
 Authors@R: c(person(given = "Jose", family = "Gama", role = c("aut","cre","trl"),email = "rxprtgama@gmail.com"),
