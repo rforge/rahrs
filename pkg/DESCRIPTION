@@ -7,7 +7,7 @@ Authors@R: c(person(given = "Jose", family = "Gama", role = c("aut","cre","trl")
     person(given = "Vlad", family = "Maximov", role = "aut"),
     person(given = "Sebastian", family = "O.H. Madgwick", role = "aut"),
     person(given = "Alain", family = "Barraud", role = "ctb"))   
-Description: R implementation of data fusion filters for Attitude Heading Reference System (AHRS) based on
+Description: Data fusion filters for Attitude Heading Reference System (AHRS) based on
     Vlad Maximov's GyroLib AHRS library (quaternion based linearized/extended/unscented Kalman filter,
     Euler based LKF, gyro-free with vector matching, SVD calibration and EKF calibration),
     Sebastian O.H. Madgwick AHRS algorithms and Sebastian O.H. Madgwick implementation of Mayhony et al AHRS algorithm.
